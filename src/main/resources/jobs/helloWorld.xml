@@ -9,13 +9,23 @@
 									
 	<beans:import resource="../launch-context.xml"/>
 
-	<beans:bean id="helloWorld"	class="com.apress.springbatch.chapter2.HelloWorld"/>
+	<beans:bean id="helloWorld"	class="com.apress.springbatch.chapter2.HelloWorld" scope="step">
+		<beans:property name="name" value="#{jobParameters[name]}"/>
+	</beans:bean>
 	
 	<step id="helloWorldStep">
 		<tasklet ref="helloWorld"/>
 	</step>
 	
-	<job id="helloWorldJob">
+	<beans:bean id="requiredParamValidator"
+		class="com.apress.springbatch.chapter2.validator.ParameterValidator">
+	</beans:bean>
+	
+	<beans:bean id="idIncrementer"
+		class="org.springframework.batch.core.launch.support.RunIdIncrementer"/>
+
+	<job id="helloWorldJob" incrementer="idIncrementer">
 		<step id="step1" parent="helloWorldStep"/>
+		<validator ref="requiredParamValidator"/>
 	</job>
 </beans:beans>
